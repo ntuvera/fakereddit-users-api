@@ -37,7 +37,12 @@ public class UsersApiController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
     @PostMapping("/signup")
-    public ResponseEntity<?> signUpUser(@RequestBody User newUser){
+    public ResponseEntity<?> signUpUser(@ApiParam(example = "{\t\"email\" : \"wonderwoman@superhero.com\",\n" +
+            "\t\"password\" : \"wonder\",\n" +
+            "\t\"username\" : \"wonderwoman\",\n" +
+            "\t\"userRole\": {\n" +
+            "\t\t\"name\": \"ROLE_ADMIN\"\n" +
+            "\t}}") @RequestBody User newUser){
         return ResponseEntity.ok(userService.signUpUser(newUser));
     }
 

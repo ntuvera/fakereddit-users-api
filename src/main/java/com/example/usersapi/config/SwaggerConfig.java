@@ -21,10 +21,7 @@ public class SwaggerConfig {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-//                .apis(RequestHandlerSelectors.basePackage("org.springframework.data.jpa.repository.support"))
-//                .paths(PathSelectors.regex("/user"))
-                .apis(RequestHandlerSelectors
-                    .basePackage("net.guides.springboot2.springboot2swagger2.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.example.usersapi.controller"))
                 .paths(PathSelectors.any())
 //                .paths(PathSelectors.regex("/.*"))
                 .build()

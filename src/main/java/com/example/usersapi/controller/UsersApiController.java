@@ -8,10 +8,7 @@ import com.example.usersapi.model.User;
 import com.example.usersapi.model.UserProfile;
 import com.example.usersapi.service.UserProfileServiceImpl;
 import com.example.usersapi.service.UserServiceImpl;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +37,12 @@ public class UsersApiController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
     @PostMapping("/signup")
-    public ResponseEntity<?> signUpUser(@RequestBody User newUser){
+    public ResponseEntity<?> signUpUser(@ApiParam(example = "{\t\"email\" : \"wonderwoman@superhero.com\",\n" +
+            "\t\"password\" : \"wonder\",\n" +
+            "\t\"username\" : \"wonderwoman\",\n" +
+            "\t\"userRole\": {\n" +
+            "\t\t\"name\": \"ROLE_ADMIN\"\n" +
+            "\t}}") @RequestBody User newUser){
         return ResponseEntity.ok(userService.signUpUser(newUser));
     }
 
@@ -79,7 +81,7 @@ public class UsersApiController {
             @ApiResponse(code = 401, message = "You are unauthorized to view this list"),
     })
     @GetMapping("/post")
-    public List<PostBean> listPostsByUser(@RequestHeader("userId") Integer userId){
+    public List<PostBean> listPostsByUser(@ApiParam(value="userId", hidden=true, required=false) @RequestHeader("userId") Integer userId){
         return postClient.getAllPostsByUser();
     }
 
@@ -89,7 +91,7 @@ public class UsersApiController {
             @ApiResponse(code = 401, message = "You are unauthorized to view this list"),
     })
     @GetMapping("/comment")
-    public List<CommentBean> listCommentsByUser(@RequestHeader("userId") Integer userId) {
+    public List<CommentBean> listCommentsByUser(@ApiParam(value="userId", hidden=true, required=false) @RequestHeader("userId") Integer userId) {
         return commentClient.getAllCommentsByUser();
     }
 
@@ -99,7 +101,7 @@ public class UsersApiController {
             @ApiResponse(code = 401, message = "You are unauthorized to view a profile, please log in"),
     })
     @GetMapping("/profile")
-    public UserProfile getUserProfile(@RequestHeader("userId") String userId){
+    public UserProfile getUserProfile(@ApiParam(value="userId", hidden=true, required=false) @RequestHeader("userId") String userId){
         return userProfileService.getUserProfile(Integer.parseInt(userId));
     }
 
@@ -109,7 +111,7 @@ public class UsersApiController {
             @ApiResponse(code = 401, message = "You are unauthorized to edit a profile, please log in"),
     })
     @PostMapping("/profile")
-    public UserProfile createUserProfile(@RequestBody UserProfile userProfile, @RequestHeader("userId") int userId){
+    public UserProfile createUserProfile(@RequestBody UserProfile userProfile, @ApiParam(value="userId", hidden=true, required=false) @RequestHeader("userId") int userId){
         return userProfileService.createProfile(userProfile, userId);
     }
 

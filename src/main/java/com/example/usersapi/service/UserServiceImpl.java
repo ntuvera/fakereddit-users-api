@@ -1,5 +1,8 @@
 package com.example.usersapi.service;
 
+import com.example.usersapi.exception.NoMatchingUserFoundException;
+import com.example.usersapi.exception.UserAlreadyExistsException;
+import com.example.usersapi.exception.UserNotFoundException;
 import com.example.usersapi.model.JwtResponse;
 import com.example.usersapi.model.User;
 import com.example.usersapi.model.UserRole;
@@ -7,6 +10,7 @@ import com.example.usersapi.repository.UserRepository;
 import com.example.usersapi.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,7 +32,7 @@ public class UserServiceImpl implements UserService {
     private JwtUtil jwtUtil;
 
     @Override
-    public JwtResponse signUpUser(User newUser) {
+    public JwtResponse signUpUser(User newUser) throws UserAlreadyExistsException {
         JwtResponse signupResponse = new JwtResponse();
         UserRole userRole = null;
 
@@ -41,6 +45,9 @@ public class UserServiceImpl implements UserService {
         newUser.setUserRole(userRole);
         newUser.setPassword(encoder().encode(newUser.getPassword()));
 
+        if (getUser(newUser.getUsername())!= null) {
+            throw new UserAlreadyExistsException(HttpStatus.BAD_REQUEST, "User with that name/email already Exists");
+        }
         if (userRepository.save(newUser) != null) {
             User user = loadUserByUsername(newUser.getUsername());
             signupResponse.setToken(jwtUtil.generateToken(user));
@@ -55,7 +62,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public JwtResponse loginUser(User user) {
+    public JwtResponse loginUser(User user) throws UserNotFoundException {
         JwtResponse loginResponse = new JwtResponse();
         User foundUser = userRepository.findByEmail(user.getEmail());
 
@@ -66,7 +73,7 @@ public class UserServiceImpl implements UserService {
             loginResponse.setId(foundUser.getId());
             return loginResponse;
         }
-        return null;
+        throw new UserNotFoundException(HttpStatus.UNAUTHORIZED, "Invalid Username/Password");
     }
 
     @Override
@@ -75,11 +82,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findById(int userId) {
+    public Optional<User> findById(int userId) throws NoMatchingUserFoundException {
         if(userRepository.findById(userId).isPresent()) {
             return userRepository.findById(userId);
         }
-        return null;
+        throw new NoMatchingUserFoundException(HttpStatus.NOT_FOUND, "The user you're looking for does not exist");
     }
 
     private User getUser(String username) {

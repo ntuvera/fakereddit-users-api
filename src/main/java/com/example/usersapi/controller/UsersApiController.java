@@ -2,6 +2,9 @@ package com.example.usersapi.controller;
 
 import com.example.usersapi.bean.CommentBean;
 import com.example.usersapi.bean.PostBean;
+import com.example.usersapi.exception.NoMatchingUserFoundException;
+import com.example.usersapi.exception.UserAlreadyExistsException;
+import com.example.usersapi.exception.UserNotFoundException;
 import com.example.usersapi.feign.CommentClient;
 import com.example.usersapi.feign.PostClient;
 import com.example.usersapi.model.User;
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.*;
 
 @RestController
@@ -42,7 +46,7 @@ public class UsersApiController {
             "\t\"username\" : \"wonderwoman\",\n" +
             "\t\"userRole\": {\n" +
             "\t\t\"name\": \"ROLE_ADMIN\"\n" +
-            "\t}}") @RequestBody User newUser){
+            "\t}}") @Valid @RequestBody User newUser) throws UserAlreadyExistsException {
         return ResponseEntity.ok(userService.signUpUser(newUser));
     }
 
@@ -51,7 +55,7 @@ public class UsersApiController {
             @ApiResponse(code = 200, message = "Successfully logged in"),
     })
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody User user){
+    public ResponseEntity<?> loginUser(@RequestBody User user) throws UserNotFoundException {
         if(userService.loginUser(user) != null) {
             return ResponseEntity.ok(userService.loginUser(user));
         }
@@ -122,7 +126,7 @@ public class UsersApiController {
             @ApiResponse(code = 401, message = "You are unauthorized to edit a profile, please log in"),
     })
     @GetMapping("/identify/{userId}")
-    public Optional<User> findUserById(@PathVariable int userId) {
+    public Optional<User> findUserById(@PathVariable int userId) throws NoMatchingUserFoundException {
         return userService.findById(userId);
     }
 }

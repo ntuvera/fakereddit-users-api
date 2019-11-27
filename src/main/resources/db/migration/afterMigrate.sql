@@ -1,4 +1,4 @@
-
+DELETE FROM user_roles WHERE id>0;
 INSERT INTO user_roles
 (name)
 VALUES ('ROLE_DBA'),

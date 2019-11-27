@@ -1,13 +1,15 @@
 package com.example.usersapi.exceptionhandler;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 public class ErrorDetails {
     private Date timestamp;
     private String message;
-    private String details;
+    private List<String> details;
 
-    public ErrorDetails(Date timestamp, String message, String details) {
+    public ErrorDetails(Date timestamp, String message, List<String> details) {
         super();
         this.timestamp = timestamp;
         this.message = message;
@@ -30,11 +32,11 @@ public class ErrorDetails {
         this.message = message;
     }
 
-    public String getDetails() {
+    public List<String> getDetails() {
         return details;
     }
 
     public void setDetails(String details) {
-        this.details = details;
+        this.details = Collections.singletonList(details);
     }
 }

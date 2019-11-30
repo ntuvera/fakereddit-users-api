@@ -1,9 +1,7 @@
 package com.example.usersapi.controller;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 
 import com.example.usersapi.bean.CommentBean;
 import com.example.usersapi.bean.PostBean;
@@ -15,7 +13,6 @@ import com.example.usersapi.model.UserProfile;
 import com.example.usersapi.model.UserRole;
 import com.example.usersapi.service.UserProfileServiceImpl;
 import com.example.usersapi.service.UserServiceImpl;
-import com.example.usersapi.util.JwtUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -267,10 +264,5 @@ public class UsersApiControllerTest {
                 .andReturn();
 
         System.out.println(result.getResponse().getContentAsString());
-    }
-
-    @Test
-    public void dummy_Test() throws Exception {
-        assertEquals(2,2);
     }
 }

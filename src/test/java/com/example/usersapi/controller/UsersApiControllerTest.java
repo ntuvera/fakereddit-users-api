@@ -5,6 +5,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 
+import com.example.usersapi.bean.PostBean;
+import com.example.usersapi.feign.PostClient;
 import com.example.usersapi.model.JwtResponse;
 import com.example.usersapi.model.User;
 import com.example.usersapi.model.UserProfile;
@@ -54,7 +56,10 @@ public class UsersApiControllerTest {
     private UserProfileServiceImpl userProfileService;
 
     @MockBean
-    private JwtUtil jwtUtil;
+    private PostClient postClient;
+
+    @InjectMocks
+    private PostBean postBean;
 
     @InjectMocks
     private User user;
@@ -148,7 +153,31 @@ public class UsersApiControllerTest {
     }
 
     @Test
-    public void listPostsByUser_ReturnsPostList_Success() throws Exception {}
+    @WithMockUser(username = "testUser", password = "testPass", roles = {"ADMIN"})
+    public void listPostsByUser_ReturnsPostList_Success() throws Exception {
+        postBean.setId(1);
+        postBean.setTitle("Test Post Title");
+        postBean.setDescription(("Test Post Description"));
+        postBean.setUserId(1);
+
+        List<PostBean> userPostsList = new ArrayList<>();
+        userPostsList.add(postBean);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/post")
+                .header("Authorization", "")
+                .header("userId", "1");
+
+        when(postClient.getAllPostsByUser()).thenReturn(userPostsList);
+
+        MvcResult result = mockMvc
+                .perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(content().json("[{\"id\":1,\"title\":\"Test Post Title\",\"description\":\"Test Post Description\",\"userId\":1}]"))
+                .andReturn();
+
+        System.out.println(result.getResponse().getContentAsString());
+    }
 
     @Test
     public void listCommentsByUser_ReturnsCommentList_Success() throws Exception {}

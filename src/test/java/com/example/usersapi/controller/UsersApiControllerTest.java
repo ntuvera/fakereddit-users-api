@@ -9,6 +9,7 @@ import com.example.usersapi.model.JwtResponse;
 import com.example.usersapi.model.User;
 import com.example.usersapi.model.UserProfile;
 import com.example.usersapi.model.UserRole;
+import com.example.usersapi.service.UserProfileServiceImpl;
 import com.example.usersapi.service.UserServiceImpl;
 import com.example.usersapi.util.JwtUtil;
 import org.junit.Before;
@@ -48,6 +49,9 @@ public class UsersApiControllerTest {
 
     @MockBean
     private UserServiceImpl userService;
+
+    @MockBean
+    private UserProfileServiceImpl userProfileService;
 
     @MockBean
     private JwtUtil jwtUtil;
@@ -130,7 +134,7 @@ public class UsersApiControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin", password = "admin", roles = {"ADMIN"})
+    @WithMockUser(username = "admin", password = "testPass", roles = {"USER"})
     public void listAll_UserList_Success() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/list")
@@ -148,6 +152,39 @@ public class UsersApiControllerTest {
 
         System.out.println(result.getResponse().getContentAsString());
     }
+
+    @Test
+    public void listPostsByUser_ReturnsPostList_Success() throws Exception {}
+
+    @Test
+    public void listCommentsByUser_ReturnsCommentList_Success() throws Exception {}
+
+    @Test
+    public void getUserProfile_ReturnsUserProfile_Success() throws Exception {}
+
+    @Test
+    @WithMockUser(username = "testUser", password = "test", roles = {"ADMIN"})
+    public void createUserProfile_ReturnsUserProfile_Success() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/profile")
+                .header("Authorization", "")
+                .header("userId", "1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"additionalEmail\":\"additionalEmail@email.com\",\"address\":\"123 Test St.\",\"mobile\":\"1-800-TEST-NUM\"}");
+
+        when(userProfileService.createProfile(any(), anyInt())).thenReturn(userProfile);
+
+        MvcResult result = mockMvc
+                .perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"id\":1,\"additionalEmail\":\"additionalEmail@email.com\",\"mobile\":\"1-800-TEST-NUM\",\"address\":\"123 Test St.\",\"userId\":1}\n"))
+                .andReturn();
+
+        System.out.println(result.getResponse().getContentAsString());
+    }
+
+    @Test
+    public void findUserById_ReturnsUser_Success() throws Exception {}
 
     @Test
     public void dummy_Test() throws Exception {

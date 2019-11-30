@@ -115,7 +115,7 @@ public class UsersApiController {
             @ApiResponse(code = 401, message = "You are unauthorized to edit a profile, please log in"),
     })
     @PostMapping("/profile")
-    public UserProfile createUserProfile(@RequestBody UserProfile userProfile, @ApiParam(value="userId", hidden=true, required=false) @RequestHeader("userId") int userId){
+    public UserProfile createUserProfile(@RequestBody UserProfile userProfile, @ApiParam(value="userId", hidden=true, required=false) @RequestHeader("userId") int userId) throws UserNotFoundException {
         return userProfileService.createProfile(userProfile, userId);
     }
 

@@ -105,8 +105,6 @@ public class UsersApiControllerTest {
 
         when(userService.signUpUser(any())).thenReturn(jwtResponse);
 
-        mockMvc.perform(requestBuilder).andExpect(status().isOk());
-
         MvcResult result = mockMvc
                 .perform(requestBuilder)
                 .andExpect(status().isOk())
@@ -124,8 +122,6 @@ public class UsersApiControllerTest {
 
         when(userService.loginUser(any())).thenReturn(jwtResponse);
 
-        mockMvc.perform(requestBuilder).andExpect(status().isOk());
-
         MvcResult result = mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk())
                 .andExpect(content().json("{\"token\":\"12345\",\"username\":\"testUser\",\"id\":1}"))
@@ -141,8 +137,6 @@ public class UsersApiControllerTest {
                 .header("Authorization", "");
 
         when(userService.listAll()).thenReturn(userList);
-
-        mockMvc.perform(requestBuilder).andExpect(status().isOk());
 
         MvcResult result = mockMvc
                 .perform(requestBuilder)
@@ -160,10 +154,26 @@ public class UsersApiControllerTest {
     public void listCommentsByUser_ReturnsCommentList_Success() throws Exception {}
 
     @Test
-    public void getUserProfile_ReturnsUserProfile_Success() throws Exception {}
+    @WithMockUser(username = "testUser", password = "testPass", roles = {"ADMIN"})
+    public void getUserProfile_ReturnsUserProfile_Success() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/profile")
+                .header("Authorization", "")
+                .header("userId", "1");
+
+        when(userProfileService.getUserProfile(anyInt())).thenReturn(userProfile);
+
+        MvcResult result = mockMvc
+                .perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"id\":1,\"additionalEmail\":\"additionalEmail@email.com\",\"mobile\":\"1-800-TEST-NUM\",\"address\":\"123 Test St.\",\"userId\":1}"))
+                .andReturn();
+
+        System.out.println(result.getResponse().getContentAsString());
+    }
 
     @Test
-    @WithMockUser(username = "testUser", password = "test", roles = {"ADMIN"})
+    @WithMockUser(username = "testUser", password = "testPass", roles = {"ADMIN"})
     public void createUserProfile_ReturnsUserProfile_Success() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/profile")

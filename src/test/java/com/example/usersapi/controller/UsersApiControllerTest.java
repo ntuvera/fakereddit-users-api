@@ -5,7 +5,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 
+import com.example.usersapi.bean.CommentBean;
 import com.example.usersapi.bean.PostBean;
+import com.example.usersapi.feign.CommentClient;
 import com.example.usersapi.feign.PostClient;
 import com.example.usersapi.model.JwtResponse;
 import com.example.usersapi.model.User;
@@ -58,20 +60,26 @@ public class UsersApiControllerTest {
     @MockBean
     private PostClient postClient;
 
-    @InjectMocks
-    private PostBean postBean;
-
-    @InjectMocks
-    private User user;
+    @MockBean
+    private CommentClient commentClient;
 
     @InjectMocks
     private JwtResponse jwtResponse;
+
+    @InjectMocks
+    private User user;
 
     @InjectMocks
     private UserRole userRole;
 
     @InjectMocks
     private UserProfile userProfile;
+
+    @InjectMocks
+    private PostBean postBean;
+
+    @InjectMocks
+    private CommentBean commentBean;
 
     private List<User> userList;
 
@@ -180,7 +188,30 @@ public class UsersApiControllerTest {
     }
 
     @Test
-    public void listCommentsByUser_ReturnsCommentList_Success() throws Exception {}
+    public void listCommentsByUser_ReturnsCommentList_Success() throws Exception {
+        commentBean.setId(1);
+        commentBean.setText("Test Comment");
+        commentBean.setPostId(1);
+        commentBean.setUserId(1);
+
+        List<CommentBean> userCommentsList = new ArrayList<>();
+        userCommentsList.add(commentBean);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/comment")
+                .header("Authorization", "")
+                .header("userId", "1");
+
+        when(commentClient.getAllCommentsByUser()).thenReturn(userCommentsList);
+
+        MvcResult result = mockMvc
+                .perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(content().json("[{\"id\":1,\"text\":\"Test Comment\",\"postId\":1,\"userId\":1}]"))
+                .andReturn();
+
+        System.out.println(result.getResponse().getContentAsString());
+    }
 
     @Test
     @WithMockUser(username = "testUser", password = "testPass", roles = {"ADMIN"})

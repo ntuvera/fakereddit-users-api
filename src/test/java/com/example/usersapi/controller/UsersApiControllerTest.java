@@ -66,11 +66,11 @@ public class UsersApiControllerTest {
     }
 
     @Test
-    public void signup_Returns200_Success() throws Exception {
+    public void signup_ReturnsJwtResponse_Success() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/signup")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{" + "\"username\":\"testUser\"," + "\"email\":\"user@testmail.com\"," + "\"password\":\"testPass\"," + "\"userRole\":{" + "\"name\": \"ROLE_ADMIN\"}" + "}");
+                .content("{\"username\":\"testUser\",\"email\":\"user@testmail.com\",\"password\":\"testPass\",\"userRole\":{\"name\": \"ROLE_ADMIN\"}}");
 
         when(userService.signUpUser(any())).thenReturn(jwtResponse);
 
@@ -81,7 +81,25 @@ public class UsersApiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json("{\"token\":\"12345\",\"username\":\"testUser\",\"id\":1}"))
                 .andReturn();
-        System.out.println(">>>>>>>>>>>>>" + result.getResponse().getContentAsString());
+        System.out.println(result.getResponse().getContentAsString());
+    }
+
+    @Test
+    public void login_ReturnsJwtResponse_Success() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\":\"user@testmail.com\",\"password\":\"testPass\"}");
+
+        when(userService.loginUser(any())).thenReturn(jwtResponse);
+
+        mockMvc.perform(requestBuilder).andExpect(status().isOk());
+
+        MvcResult result = mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"token\":\"12345\",\"username\":\"testUser\",\"id\":1}"))
+                .andReturn();
+        System.out.println(result.getResponse().getContentAsString());
     }
 
     @Test

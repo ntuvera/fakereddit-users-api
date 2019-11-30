@@ -194,7 +194,20 @@ public class UsersApiControllerTest {
     }
 
     @Test
-    public void findUserById_ReturnsUser_Success() throws Exception {}
+    public void findUserById_ReturnsUser_Success() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/identify/{userId}", 1);
+
+        when(userService.findById(anyInt())).thenReturn(java.util.Optional.of(user));
+
+        MvcResult result = mockMvc
+                .perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"id\":1,\"username\":\"testUser\",\"password\":\"testPass\",\"email\":\"user@testmail.com\",\"userProfile\":{\"id\":1,\"additionalEmail\":\"additionalEmail@email.com\",\"mobile\":\"1-800-TEST-NUM\",\"address\":\"123 Test St.\",\"userId\":1},\"userRole\":{\"id\":3,\"name\":\"ROLE_USER\"}}\n"))
+                .andReturn();
+
+        System.out.println(result.getResponse().getContentAsString());
+    }
 
     @Test
     public void dummy_Test() throws Exception {

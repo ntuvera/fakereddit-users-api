@@ -5,6 +5,8 @@ import com.example.usersapi.repository.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.MissingFormatArgumentException;
+
 @Service
 public class UserRoleServiceImpl implements UserRoleService{
     @Autowired
@@ -12,6 +14,9 @@ public class UserRoleServiceImpl implements UserRoleService{
 
     @Override
     public UserRole createRole(UserRole newRole) {
+        if(newRole.getName() == null || newRole.getName() == "")
+            throw new MissingFormatArgumentException("User Role name is invalid");
+
         return userRoleRepository.save(newRole);
     }
 

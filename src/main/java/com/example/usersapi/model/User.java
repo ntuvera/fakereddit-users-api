@@ -28,6 +28,11 @@ public class User {
     @JoinColumn(name = "user_role_id", nullable = false)
     private UserRole userRole;
 
+    public User(String username, String password, String email) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
 
     public User() {}
 

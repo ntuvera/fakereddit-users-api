@@ -28,7 +28,6 @@ public class UserProfileServiceImpl implements UserProfileService{
             if(foundUser.isPresent()) {
                 foundUser.get().setUserProfile(newUserProfile);
             } else {
-                // return null;
                 throw new UserNotFoundException(HttpStatus.BAD_REQUEST, "User Not Found");
             }
         return userProfileRepository.save(userProfile);
@@ -45,7 +44,6 @@ public class UserProfileServiceImpl implements UserProfileService{
             foundUser.get().setUserProfile(newUserProfile);
             userRepository.save(foundUser.get());
         } else {
-//            return null;
             throw new UserNotFoundException(HttpStatus.BAD_REQUEST, "User Not Found");
         }
         newUserProfile = userProfileRepository.save(userProfile);

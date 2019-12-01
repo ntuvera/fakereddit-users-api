@@ -9,7 +9,7 @@ import com.example.usersapi.model.User;
 import java.util.Optional;
 
 public interface UserService {
-    public JwtResponse signUpUser(User newUser) throws UserAlreadyExistsException;
+    public JwtResponse signUpUser(User newUser) throws UserAlreadyExistsException, UserNotFoundException;
     public JwtResponse loginUser(User user) throws UserNotFoundException;
     public Iterable<User> listAll();
     public Optional<User> findById(int userId) throws NoMatchingUserFoundException;

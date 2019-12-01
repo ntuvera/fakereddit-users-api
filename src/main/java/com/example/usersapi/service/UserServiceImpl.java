@@ -30,9 +30,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private JwtUtil jwtUtil;
-
+// TODO: Why UserNotFoundException in this method?
     @Override
-    public JwtResponse signUpUser(User newUser) throws UserAlreadyExistsException {
+    public JwtResponse signUpUser(User newUser) throws UserAlreadyExistsException, UserNotFoundException {
         JwtResponse signupResponse = new JwtResponse();
         UserRole userRole = null;
 
@@ -58,7 +58,8 @@ public class UserServiceImpl implements UserService {
 
             return signupResponse;
         }
-        return null;
+//        return null;
+        throw new UserAlreadyExistsException(HttpStatus.BAD_REQUEST, "User with that name/email already Exists");
     }
 
     @Override
@@ -89,17 +90,17 @@ public class UserServiceImpl implements UserService {
         throw new NoMatchingUserFoundException(HttpStatus.NOT_FOUND, "The user you're looking for does not exist");
     }
 
-    private User getUser(String username) {
+    public User getUser(String username) {
         return userRepository.findByUsername(username);
     }
 
-    public User loadUserByUsername(String username) {
+    public User loadUserByUsername(String username) throws UserNotFoundException {
         User user = getUser(username);
 
         if (user != null) {
             return user;
         }
 
-        return null;
+        throw new UserNotFoundException("No User Found with that Username");
     }
 }

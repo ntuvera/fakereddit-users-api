@@ -46,7 +46,7 @@ public class UsersApiController {
             "\t\"username\" : \"wonderwoman\",\n" +
             "\t\"userRole\": {\n" +
             "\t\t\"name\": \"ROLE_ADMIN\"\n" +
-            "\t}}") @Valid @RequestBody User newUser) throws UserAlreadyExistsException {
+            "\t}}") @Valid @RequestBody User newUser) throws UserAlreadyExistsException, UserNotFoundException {
         return ResponseEntity.ok(userService.signUpUser(newUser));
     }
 

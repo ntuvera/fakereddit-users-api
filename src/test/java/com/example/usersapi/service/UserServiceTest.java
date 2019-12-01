@@ -66,28 +66,38 @@ public class UserServiceTest {
         tempUser1 = new User("batman", "bat", "iam@batman.com");
         tempUser2 = new User("robin", "bird", "iam@robin.com");
         tempUser3 = new User("alfred", "butler", "iam@allpowerful.com");
+        tempUser1.setId(1);
 
         userList.add(tempUser1);
         userList.add(tempUser2);
         userList.add(tempUser3);
     }
 
-//    @Test
-//    public void signupUser_User_Success() throws UserAlreadyExistsException, UserNotFoundException {
-//
-//        when(userRoleService.getRole(anyString())).thenReturn(new UserRole("ROLE_USER"));
-//        when(encoder.encode(anyString())).thenReturn("bat");
-//        when(userServiceHelper.getUser(anyString())).thenReturn(null).thenReturn(tempUser1);
-//        when(userRepository.save(any())).thenReturn(tempUser1);
-//        when(userService.loadUserByUsername(anyString())).thenReturn(tempUser1);
-//        when(jwtUtil.generateToken(any())).thenReturn("fake-token-123");
-//
-//        JwtResponse createdUserResponse = userService.signUpUser(tempUser1);
-//
-//        assertNotNull(createdUserResponse);
-//        assertEquals(tempUser1, createdUserResponse);
-//        assertEquals(tempUser1.getUsername(), createdUserResponse.getUsername());
-//    }
+    @Test
+    public void signupUser_User_Success() throws UserAlreadyExistsException, UserNotFoundException {
+
+        JwtResponse successResponse = new JwtResponse("fake-token-123", "batman", 1);
+
+        when(userRoleService.getRole(anyString())).thenReturn(new UserRole("ROLE_USER"));
+        when(bCryptPasswordEncoder.encode(anyString())).thenReturn("bat");
+//        when(userService.getUser(anyString())).thenReturn(tempUser1);
+//        when(userService.getUser(anyString())).thenReturn(null);
+        when(userService.getUser(anyString())).thenReturn(tempUser1).thenReturn(null);
+//        when(userService.getUser(anyString())).thenReturn(null).thenReturn(tempUser1);
+        when(userRepository.save(any())).thenReturn(tempUser1);
+
+        when(userService.loadUserByUsername(anyString())).thenReturn(tempUser1); // TODO: why wont this return the desired user?
+
+        when(jwtUtil.generateToken(any())).thenReturn("fake-token-123");
+        when(userRepository.findByUsername(anyString())).thenReturn(null).thenReturn(tempUser1);
+
+        JwtResponse createdUserResponse = userService.signUpUser(tempUser1);
+
+        assertNotNull(createdUserResponse);
+        assertEquals(successResponse.getToken(), createdUserResponse.getToken());
+        assertEquals(successResponse.getUsername(), createdUserResponse.getUsername());
+        assertEquals(successResponse.getId(), createdUserResponse.getId());
+    }
 
     @Test(expected = UserAlreadyExistsException.class)
     public void signupUser_User_Failure() throws UserAlreadyExistsException, UserNotFoundException {

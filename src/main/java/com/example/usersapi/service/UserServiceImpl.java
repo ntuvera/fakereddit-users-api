@@ -58,9 +58,9 @@ public class UserServiceImpl implements UserService {
             System.out.println(signupResponse);
 
             return signupResponse;
+        } else {
+            throw new UserAlreadyExistsException(HttpStatus.BAD_REQUEST, "User with that name/email already Exists");
         }
-//        return null;
-        throw new UserAlreadyExistsException(HttpStatus.BAD_REQUEST, "User with that name/email already Exists");
     }
 
     @Override
@@ -99,8 +99,8 @@ public class UserServiceImpl implements UserService {
 
         if (user != null) {
             return user;
+        } else {
+            throw new UserNotFoundException("No User Found with that Username");
         }
-
-        throw new UserNotFoundException("No User Found with that Username");
     }
 }

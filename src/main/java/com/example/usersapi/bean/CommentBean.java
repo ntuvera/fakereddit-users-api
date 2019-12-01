@@ -8,6 +8,13 @@ public class CommentBean {
 
     public CommentBean() { }
 
+    public CommentBean(int id, String text, int postId, int userId) {
+        this.id = id;
+        this.text = text;
+        this.postId = postId;
+        this.userId = userId;
+    }
+
     public int getId() {
         return id;
     }

@@ -19,8 +19,9 @@ import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
-    @Bean
-    public PasswordEncoder encoder() {return new BCryptPasswordEncoder(); }
+    private PasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+//    @Bean
+//    public PasswordEncoder encoder() {return new BCryptPasswordEncoder(); }
 
     @Autowired
     private UserRepository userRepository;
@@ -43,7 +44,7 @@ public class UserServiceImpl implements UserService {
         }
 
         newUser.setUserRole(userRole);
-        newUser.setPassword(encoder().encode(newUser.getPassword()));
+        newUser.setPassword(bCryptPasswordEncoder.encode(newUser.getPassword()));
 
         if (getUser(newUser.getUsername())!= null) {
             throw new UserAlreadyExistsException(HttpStatus.BAD_REQUEST, "User with that name/email already Exists");
@@ -67,8 +68,7 @@ public class UserServiceImpl implements UserService {
         JwtResponse loginResponse = new JwtResponse();
         User foundUser = userRepository.findByEmail(user.getEmail());
 
-        if (foundUser != null && encoder()
-                .matches(user.getPassword(), foundUser.getPassword())) {
+        if (foundUser != null && bCryptPasswordEncoder.matches(user.getPassword(), foundUser.getPassword())) {
             loginResponse.setToken(jwtUtil.generateToken(foundUser));
             loginResponse.setUsername(foundUser.getUsername());
             loginResponse.setId(foundUser.getId());

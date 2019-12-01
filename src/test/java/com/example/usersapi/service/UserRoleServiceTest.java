@@ -1,5 +1,6 @@
 package com.example.usersapi.service;
 
+import com.example.usersapi.exception.UserRoleExistsException;
 import com.example.usersapi.model.UserRole;
 import com.example.usersapi.repository.UserRoleRepository;
 import org.junit.Before;
@@ -34,7 +35,7 @@ public class UserRoleServiceTest {
     }
 
     @Test
-    public void createRole_UserRole_Success() {
+    public void createRole_UserRole_Success() throws UserRoleExistsException {
         when(userRoleRepository.save(any())).thenReturn(tempRole);
 
         UserRole createdRole = userRoleService.createRole(tempRole);
@@ -44,7 +45,7 @@ public class UserRoleServiceTest {
     }
 
     @Test(expected = MissingFormatArgumentException.class)
-    public void createRole_InvalidRoleName_Failure() {
+    public void createRole_InvalidRoleName_Failure() throws UserRoleExistsException {
         tempRole.setName("");
         UserRole createdRole = userRoleService.createRole(tempRole);
     }

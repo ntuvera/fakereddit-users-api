@@ -46,7 +46,7 @@ public class UsersApiController {
             "\t\"username\" : \"wonderwoman\",\n" +
             "\t\"userRole\": {\n" +
             "\t\t\"name\": \"ROLE_ADMIN\"\n" +
-            "\t}}") @Valid @RequestBody User newUser) throws UserAlreadyExistsException {
+            "\t}}") @Valid @RequestBody User newUser) throws UserAlreadyExistsException, UserNotFoundException {
         return ResponseEntity.ok(userService.signUpUser(newUser));
     }
 
@@ -115,7 +115,7 @@ public class UsersApiController {
             @ApiResponse(code = 401, message = "You are unauthorized to edit a profile, please log in"),
     })
     @PostMapping("/profile")
-    public UserProfile createUserProfile(@RequestBody UserProfile userProfile, @ApiParam(value="userId", hidden=true, required=false) @RequestHeader("userId") int userId){
+    public UserProfile createUserProfile(@RequestBody UserProfile userProfile, @ApiParam(value="userId", hidden=true, required=false) @RequestHeader("userId") int userId) throws UserNotFoundException {
         return userProfileService.createProfile(userProfile, userId);
     }
 

@@ -8,6 +8,13 @@ public class PostBean {
 
     public PostBean() { }
 
+    public PostBean(int id, String title, String description, int userId) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.userId = userId;
+    }
+
     public int getId() {
         return id;
     }

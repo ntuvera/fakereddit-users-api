@@ -19,8 +19,9 @@ import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
-    @Bean
-    public PasswordEncoder encoder() {return new BCryptPasswordEncoder(); }
+    private PasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+//    @Bean
+//    public PasswordEncoder encoder() {return new BCryptPasswordEncoder(); }
 
     @Autowired
     private UserRepository userRepository;
@@ -30,9 +31,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private JwtUtil jwtUtil;
-
+// TODO: Why UserNotFoundException in this method?
     @Override
-    public JwtResponse signUpUser(User newUser) throws UserAlreadyExistsException {
+    public JwtResponse signUpUser(User newUser) throws UserAlreadyExistsException, UserNotFoundException {
         JwtResponse signupResponse = new JwtResponse();
         UserRole userRole = null;
 
@@ -43,7 +44,7 @@ public class UserServiceImpl implements UserService {
         }
 
         newUser.setUserRole(userRole);
-        newUser.setPassword(encoder().encode(newUser.getPassword()));
+        newUser.setPassword(bCryptPasswordEncoder.encode(newUser.getPassword()));
 
         if (getUser(newUser.getUsername())!= null) {
             throw new UserAlreadyExistsException(HttpStatus.BAD_REQUEST, "User with that name/email already Exists");
@@ -57,8 +58,9 @@ public class UserServiceImpl implements UserService {
             System.out.println(signupResponse);
 
             return signupResponse;
+        } else {
+            throw new UserAlreadyExistsException(HttpStatus.BAD_REQUEST, "User with that name/email already Exists");
         }
-        return null;
     }
 
     @Override
@@ -66,8 +68,7 @@ public class UserServiceImpl implements UserService {
         JwtResponse loginResponse = new JwtResponse();
         User foundUser = userRepository.findByEmail(user.getEmail());
 
-        if (foundUser != null && encoder()
-                .matches(user.getPassword(), foundUser.getPassword())) {
+        if (foundUser != null && bCryptPasswordEncoder.matches(user.getPassword(), foundUser.getPassword())) {
             loginResponse.setToken(jwtUtil.generateToken(foundUser));
             loginResponse.setUsername(foundUser.getUsername());
             loginResponse.setId(foundUser.getId());
@@ -89,17 +90,17 @@ public class UserServiceImpl implements UserService {
         throw new NoMatchingUserFoundException(HttpStatus.NOT_FOUND, "The user you're looking for does not exist");
     }
 
-    private User getUser(String username) {
+    public User getUser(String username) {
         return userRepository.findByUsername(username);
     }
 
-    public User loadUserByUsername(String username) {
+    public User loadUserByUsername(String username) throws UserNotFoundException {
         User user = getUser(username);
 
         if (user != null) {
             return user;
+        } else {
+            throw new UserNotFoundException("No User Found with that Username");
         }
-
-        return null;
     }
 }

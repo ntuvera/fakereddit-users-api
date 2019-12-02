@@ -53,6 +53,16 @@ public class UserProfileServiceImpl implements UserProfileService{
 
     @Override
     public UserProfile getUserProfile(int userId) {
-        return userProfileRepository.getUserProfileByUserId(userId);
+        if(userProfileRepository.getUserProfileByUserId(userId) == null) {
+           UserProfile newProfile = new UserProfile("", "", "", userId);
+           userProfileRepository.save(newProfile);
+           newProfile.setUser(userRepository.findById(userId));
+           return newProfile;
+        }
+
+        UserProfile foundUserProfile = userProfileRepository.getUserProfileByUserId(userId);
+        foundUserProfile.setUser(userRepository.findById(userId));
+
+        return foundUserProfile;
     }
 }

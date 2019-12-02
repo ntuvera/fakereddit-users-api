@@ -1,5 +1,6 @@
 package com.example.usersapi.service;
 
+import com.example.usersapi.exception.InvalidArgumentException;
 import com.example.usersapi.exception.UserRoleExistsException;
 import com.example.usersapi.model.UserRole;
 import com.example.usersapi.repository.UserRoleRepository;
@@ -10,10 +11,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.MissingFormatArgumentException;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -35,7 +36,7 @@ public class UserRoleServiceTest {
     }
 
     @Test
-    public void createRole_UserRole_Success() throws UserRoleExistsException {
+    public void createRole_UserRole_Success() throws UserRoleExistsException, InvalidArgumentException {
         when(userRoleRepository.save(any())).thenReturn(tempRole);
 
         UserRole createdRole = userRoleService.createRole(tempRole);
@@ -44,8 +45,16 @@ public class UserRoleServiceTest {
         assertEquals(tempRole.getName(), createdRole.getName());
     }
 
-    @Test(expected = MissingFormatArgumentException.class)
-    public void createRole_InvalidRoleName_Failure() throws UserRoleExistsException {
+    @Test(expected = UserRoleExistsException.class)
+    public void createRole_InvalidRoleName_Failure() throws UserRoleExistsException, InvalidArgumentException {
+        tempRole.setName("ROLE_USER");
+
+        when(userRoleRepository.findByName(anyString())).thenReturn(tempRole);
+        UserRole createdRole = userRoleService.createRole(tempRole);
+    }
+
+    @Test(expected = InvalidArgumentException.class)
+    public void createRole_EmptyRoleName_Failure() throws UserRoleExistsException, InvalidArgumentException {
         tempRole.setName("");
         UserRole createdRole = userRoleService.createRole(tempRole);
     }

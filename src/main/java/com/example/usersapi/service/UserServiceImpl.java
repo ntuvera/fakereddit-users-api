@@ -1,5 +1,6 @@
 package com.example.usersapi.service;
 
+import com.example.usersapi.exception.InvalidArgumentException;
 import com.example.usersapi.exception.NoMatchingUserFoundException;
 import com.example.usersapi.exception.UserAlreadyExistsException;
 import com.example.usersapi.exception.UserNotFoundException;
@@ -9,7 +10,6 @@ import com.example.usersapi.model.UserRole;
 import com.example.usersapi.repository.UserRepository;
 import com.example.usersapi.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,8 +20,6 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
     private PasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-//    @Bean
-//    public PasswordEncoder encoder() {return new BCryptPasswordEncoder(); }
 
     @Autowired
     private UserRepository userRepository;
@@ -31,9 +29,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private JwtUtil jwtUtil;
-// TODO: Why UserNotFoundException in this method?
+
     @Override
-    public JwtResponse signUpUser(User newUser) throws UserAlreadyExistsException, UserNotFoundException {
+    public JwtResponse signUpUser(User newUser) throws UserAlreadyExistsException, UserNotFoundException, InvalidArgumentException {
         JwtResponse signupResponse = new JwtResponse();
         UserRole userRole = null;
 
@@ -45,6 +43,12 @@ public class UserServiceImpl implements UserService {
 
         newUser.setUserRole(userRole);
         newUser.setPassword(bCryptPasswordEncoder.encode(newUser.getPassword()));
+
+        if(newUser.getUsername().trim() == "" || newUser.getPassword().trim() == "" || newUser.getEmail().trim() == "" )
+            throw new InvalidArgumentException(HttpStatus.BAD_REQUEST, "Input must contain valid alphanumeric characters");
+
+        if(!newUser.getEmail().matches("/\\w+[@{1}]\\w+[.{1}]\\w+/i"))
+            throw new InvalidArgumentException(HttpStatus.BAD_REQUEST, "Email must be of a valid format");
 
         if (getUser(newUser.getUsername())!= null) {
             throw new UserAlreadyExistsException(HttpStatus.BAD_REQUEST, "User with that name/email already Exists");
@@ -64,8 +68,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public JwtResponse loginUser(User user) throws UserNotFoundException {
+    public JwtResponse loginUser(User user) throws UserNotFoundException, InvalidArgumentException {
         JwtResponse loginResponse = new JwtResponse();
+        if(user.getPassword().trim() == "" || user.getEmail().trim() == "" )
+            throw new InvalidArgumentException(HttpStatus.BAD_REQUEST, "Input must contain valid alphanumeric characters");
+
+        if(!user.getEmail().matches("/\\w+[@{1}]\\w+[.{1}]\\w+/i"))
+            throw new InvalidArgumentException(HttpStatus.BAD_REQUEST, "Email must be of a valid format");
+
         User foundUser = userRepository.findByEmail(user.getEmail());
 
         if (foundUser != null && bCryptPasswordEncoder.matches(user.getPassword(), foundUser.getPassword())) {

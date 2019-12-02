@@ -2,6 +2,7 @@ package com.example.usersapi.controller;
 
 import com.example.usersapi.bean.CommentBean;
 import com.example.usersapi.bean.PostBean;
+import com.example.usersapi.exception.InvalidArgumentException;
 import com.example.usersapi.exception.NoMatchingUserFoundException;
 import com.example.usersapi.exception.UserAlreadyExistsException;
 import com.example.usersapi.exception.UserNotFoundException;
@@ -46,7 +47,7 @@ public class UsersApiController {
             "\t\"username\" : \"wonderwoman\",\n" +
             "\t\"userRole\": {\n" +
             "\t\t\"name\": \"ROLE_ADMIN\"\n" +
-            "\t}}") @Valid @RequestBody User newUser) throws UserAlreadyExistsException, UserNotFoundException {
+            "\t}}") @Valid @RequestBody User newUser) throws UserAlreadyExistsException, UserNotFoundException, InvalidArgumentException {
         return ResponseEntity.ok(userService.signUpUser(newUser));
     }
 
@@ -55,7 +56,7 @@ public class UsersApiController {
             @ApiResponse(code = 200, message = "Successfully logged in"),
     })
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody User user) throws UserNotFoundException {
+    public ResponseEntity<?> loginUser(@RequestBody User user) throws UserNotFoundException, InvalidArgumentException {
         if(userService.loginUser(user) != null) {
             return ResponseEntity.ok(userService.loginUser(user));
         }

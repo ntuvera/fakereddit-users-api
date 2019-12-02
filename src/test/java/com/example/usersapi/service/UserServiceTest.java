@@ -1,5 +1,6 @@
 package com.example.usersapi.service;
 
+import com.example.usersapi.exception.InvalidArgumentException;
 import com.example.usersapi.exception.NoMatchingUserFoundException;
 import com.example.usersapi.exception.UserAlreadyExistsException;
 import com.example.usersapi.exception.UserNotFoundException;
@@ -34,16 +35,12 @@ public class UserServiceTest {
     private User tempUser2;
     private User tempUser3;
     private User foundUser;
-//    public PasswordEncoder encoder() {return new BCryptPasswordEncoder();};
 
     @InjectMocks
     private UserServiceImpl userService;
 
     @InjectMocks
     private UserRole userRole;
-
-    @Mock
-    private UserServiceImpl userServiceHelper;
 
     @Mock
     private UserRepository userRepository;
@@ -74,7 +71,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void signupUser_User_Success() throws UserAlreadyExistsException, UserNotFoundException {
+    public void signupUser_User_Success() throws UserAlreadyExistsException, UserNotFoundException, InvalidArgumentException {
 
         JwtResponse successResponse = new JwtResponse("fake-token-123", "batman", 1);
 
@@ -100,14 +97,14 @@ public class UserServiceTest {
     }
 
     @Test(expected = UserAlreadyExistsException.class)
-    public void signupUser_User_Failure() throws UserAlreadyExistsException, UserNotFoundException {
+    public void signupUser_User_Failure() throws UserAlreadyExistsException, UserNotFoundException, InvalidArgumentException {
         when(userService.getUser(tempUser1.getUsername())).thenReturn(tempUser1);
 
         JwtResponse failedSignUpResponse = userService.signUpUser(tempUser1);
     }
 
     @Test
-    public void loginUser_User_Success() throws UserNotFoundException {
+    public void loginUser_User_Success() throws UserNotFoundException, InvalidArgumentException {
         when(userRepository.findByEmail(anyString())).thenReturn(tempUser1);
         when(bCryptPasswordEncoder.matches(anyString(), anyString())).thenReturn(true);
         when(jwtUtil.generateToken(any())).thenReturn("fake-token-12345");
@@ -116,7 +113,7 @@ public class UserServiceTest {
     }
 
     @Test(expected = UserNotFoundException.class)
-    public void loginUser_User_Failure() throws UserNotFoundException {
+    public void loginUser_User_Failure() throws UserNotFoundException, InvalidArgumentException {
         when(userRepository.findByEmail(tempUser1.getEmail())).thenReturn(null);
 
         JwtResponse failedLoginResponse = userService.loginUser(tempUser1);

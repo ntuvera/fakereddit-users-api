@@ -1,6 +1,9 @@
 package com.example.usersapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
+import java.util.Optional;
 
 @Entity
 @Table(name="user_profiles")
@@ -21,6 +24,10 @@ public class UserProfile {
 
     @Column(name="user_id", nullable = false)
     private int userId;
+
+    @Transient
+    @JsonIgnoreProperties({"password", "email", "userProfile", "userRole, id"})
+    private Optional<User> user;
 
     public UserProfile() { }
 
@@ -65,6 +72,14 @@ public class UserProfile {
 
     public int getUserId() {
         return userId;
+    }
+
+    public Optional<User> getUser() {
+        return user;
+    }
+
+    public void setUser(Optional<User> user) {
+        this.user = user;
     }
 
     public void setUserId(int userId) {

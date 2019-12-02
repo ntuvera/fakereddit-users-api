@@ -1,5 +1,7 @@
 package com.example.usersapi.integration;
 
+import com.example.usersapi.model.UserProfile;
+import com.example.usersapi.repository.UserProfileRepository;
 import com.example.usersapi.repository.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +29,10 @@ public class UserIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
-    private UserRole createUserRole(){
+    @Autowired
+    private UserProfileRepository userProfileRepository;
+
+    private UserRole createUserRole() {
         UserRole userRole = userRoleRepository.findByName("ROLE_ADMIN");
 
         if(userRole == null){
@@ -39,7 +44,7 @@ public class UserIntegrationTest {
         return userRole;
     }
 
-    private User createUser(){
+    private User createUser() {
         UserRole userRole = createUserRole();
 
         User user = new User();
@@ -49,6 +54,19 @@ public class UserIntegrationTest {
         user.setUserRole(userRole);
 
         return user;
+    }
+
+    private UserProfile createUserProfile(User user) {
+        UserProfile userProfile = new UserProfile();
+
+        userProfile.setId(1);
+        userProfile.setAdditionalEmail("testUser@fakemail.com");
+        userProfile.setAddress("Test Address St.");
+        userProfile.setMobile("123-FAKE-NUM");
+        userProfile.setUser(java.util.Optional.ofNullable(user));
+        userProfile.setUserId(user.getId());
+
+        return userProfile;
     }
 
     @Test
@@ -94,5 +112,25 @@ public class UserIntegrationTest {
         User foundUser = userRepository.findById(user.getId()).orElse(null);
 
         assertNull(foundUser);
+    }
+
+    @Test
+    public void createUserProfile_User_Success() {
+        User user = userRepository.findByUsername("testUser");
+
+        if(user == null) {
+            user = createUser();
+            user = userRepository.save(user);
+        }
+
+        assertNotNull(user);
+        assertNull(user.getUserProfile());
+
+        user.setUserProfile(userProfileRepository.save(createUserProfile(user)));
+
+        assertNotNull(user.getUserProfile());
+        assertEquals("testUser@fakemail.com", user.getUserProfile().getAdditionalEmail());
+        assertEquals("Test Address St.", user.getUserProfile().getAddress());
+        assertEquals("123-FAKE-NUM", user.getUserProfile().getMobile());
     }
 }

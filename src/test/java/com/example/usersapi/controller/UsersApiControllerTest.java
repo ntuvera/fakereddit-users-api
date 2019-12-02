@@ -19,12 +19,14 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -42,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class})
+@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class, FlywayAutoConfiguration.class })
 public class UsersApiControllerTest {
 
     @Autowired
@@ -127,6 +129,7 @@ public class UsersApiControllerTest {
     public void login_ReturnsJwtResponse_Success() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/login")
+                .header("Authorization", "")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"email\":\"user@testmail.com\",\"password\":\"testPass\"}");
 
@@ -135,6 +138,20 @@ public class UsersApiControllerTest {
         MvcResult result = mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk())
                 .andExpect(content().json("{\"token\":\"12345\",\"username\":\"testUser\",\"id\":1}"))
+                .andReturn();
+        System.out.println(result.getResponse().getContentAsString());
+    }
+
+    @Test
+    public void login_ReturnsErrorResponse_Failure() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/login")
+                .header("Authorization", "")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\":\"user@testmail.com\",\"password\":\"badPass\"}");
+
+        MvcResult result = mockMvc.perform(requestBuilder)
+                .andExpect(status().isBadRequest())
                 .andReturn();
         System.out.println(result.getResponse().getContentAsString());
     }
@@ -253,7 +270,8 @@ public class UsersApiControllerTest {
     @Test
     public void findUserById_ReturnsUser_Success() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get("/identify/{userId}", 1);
+                .get("/identify/{userId}", 1)
+                .header("Authorization", "");
 
         when(userService.findById(anyInt())).thenReturn(java.util.Optional.of(user));
 

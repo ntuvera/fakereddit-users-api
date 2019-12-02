@@ -152,7 +152,6 @@ public class UsersApiControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder)
                 .andExpect(status().isBadRequest())
-//                .andExpect(content().json("{\"httpStatus\":\"BAD_REQUEST\",\"message\":\"Username or Password is incorrect\",\"timestamp\":\"1575316975261\"}"))
                 .andReturn();
         System.out.println(result.getResponse().getContentAsString());
     }

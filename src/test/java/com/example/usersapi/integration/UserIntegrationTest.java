@@ -3,6 +3,7 @@ package com.example.usersapi.integration;
 import com.example.usersapi.model.UserProfile;
 import com.example.usersapi.repository.UserProfileRepository;
 import com.example.usersapi.repository.UserRepository;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +16,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.example.usersapi.repository.UserRoleRepository;
 import com.example.usersapi.model.User;
 import com.example.usersapi.model.UserRole;
+
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -67,6 +70,21 @@ public class UserIntegrationTest {
         userProfile.setUserId(user.getId());
 
         return userProfile;
+    }
+
+    @After
+    public void sanitizeDb(){
+        User foundUser = userRepository.findByUsername("testUser");
+        if (foundUser != null)
+            userRepository.delete(foundUser);
+
+        UserRole foundUserRole = userRoleRepository.findByName(("ROLE_ADMIN"));
+        if (foundUserRole != null)
+            userRoleRepository.delete(foundUserRole);
+
+        Optional<UserProfile> foundUserProfile = userProfileRepository.findById(1);
+        if (foundUserProfile.isPresent())
+            userProfileRepository.deleteById(foundUserProfile.get().getId());
     }
 
     @Test

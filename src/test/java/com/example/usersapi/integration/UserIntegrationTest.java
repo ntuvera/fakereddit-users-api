@@ -14,8 +14,7 @@ import com.example.usersapi.repository.UserRoleRepository;
 import com.example.usersapi.model.User;
 import com.example.usersapi.model.UserRole;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @ActiveProfiles("qa")
 @RunWith(SpringRunner.class)
@@ -56,7 +55,7 @@ public class UserIntegrationTest {
     public void signup_User_Success() {
         User user = userRepository.findByUsername("testUser");
 
-        if(user != null) {
+        if (user != null) {
             userRepository.delete(user);
         }
 
@@ -80,5 +79,20 @@ public class UserIntegrationTest {
         user.setId(0);
 
         userRepository.save(user);
+    }
+
+    @Test
+    public void deleteById_User_Success(){
+        User user = userRepository.findByUsername("testUser");
+
+        if (user == null) {
+            user = createUser();
+            userRepository.save(user);
+        }
+
+        userRepository.deleteById(user.getId());
+        User foundUser = userRepository.findById(user.getId()).orElse(null);
+
+        assertNull(foundUser);
     }
 }

@@ -43,6 +43,6 @@ public class UsersApiApplication {
 				.select()
 				.apis(RequestHandlerSelectors.basePackage("com.example.usersapi.controller"))
 				.paths(PathSelectors.any())
-				.build().apiInfo(new ApiInfo("Account Service Api Documentation", "Documentation automatically generated", model.getParent().getVersion(), null, (String) null, null, null));
+				.build().apiInfo(new ApiInfo("Users Service API Documentation", "Documentation automatically generated", model.getParent().getVersion(), null, (String) null, null, null));
 	}
 }

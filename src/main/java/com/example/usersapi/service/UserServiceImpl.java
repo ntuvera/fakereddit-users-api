@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
         if(newUser.getUsername().trim() == "" || newUser.getPassword().trim() == "" || newUser.getEmail().trim() == "" )
             throw new InvalidArgumentException(HttpStatus.BAD_REQUEST, "Input must contain valid alphanumeric characters");
 
-        if(!newUser.getEmail().matches("/\\w+[@{1}]\\w+[.{1}]\\w+/i"))
+        if(!newUser.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$"))
             throw new InvalidArgumentException(HttpStatus.BAD_REQUEST, "Email must be of a valid format");
 
         if (getUser(newUser.getUsername())!= null) {
@@ -58,8 +58,6 @@ public class UserServiceImpl implements UserService {
             signupResponse.setToken(jwtUtil.generateToken(user));
             signupResponse.setUsername(newUser.getUsername());
             signupResponse.setId(newUser.getId());
-
-            System.out.println(signupResponse);
 
             return signupResponse;
         } else {
@@ -73,7 +71,7 @@ public class UserServiceImpl implements UserService {
         if(user.getPassword().trim() == "" || user.getEmail().trim() == "" )
             throw new InvalidArgumentException(HttpStatus.BAD_REQUEST, "Input must contain valid alphanumeric characters");
 
-        if(!user.getEmail().matches("/\\w+[@{1}]\\w+[.{1}]\\w+/i"))
+        if(!user.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$"))
             throw new InvalidArgumentException(HttpStatus.BAD_REQUEST, "Email must be of a valid format");
 
         User foundUser = userRepository.findByEmail(user.getEmail());

@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
@@ -29,6 +31,8 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
     public JwtResponse signUpUser(User newUser) throws UserAlreadyExistsException, UserNotFoundException, InvalidArgumentException {
@@ -59,6 +63,8 @@ public class UserServiceImpl implements UserService {
             signupResponse.setUsername(newUser.getUsername());
             signupResponse.setId(newUser.getId());
 
+            logger.info(">>>>>>>>>> " + user.getUsername() + " just signed up!");
+
             return signupResponse;
         } else {
             throw new UserAlreadyExistsException(HttpStatus.BAD_REQUEST, "User with that name/email already Exists");
@@ -80,6 +86,9 @@ public class UserServiceImpl implements UserService {
             loginResponse.setToken(jwtUtil.generateToken(foundUser));
             loginResponse.setUsername(foundUser.getUsername());
             loginResponse.setId(foundUser.getId());
+
+            logger.info(">>>>>>>>>> " + foundUser.getUsername() + " just logged in!");
+
             return loginResponse;
         }
         throw new UserNotFoundException(HttpStatus.UNAUTHORIZED, "Invalid Username/Password");

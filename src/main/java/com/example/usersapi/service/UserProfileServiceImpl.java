@@ -21,7 +21,7 @@ public class UserProfileServiceImpl implements UserProfileService{
     @Autowired
     UserRepository userRepository;
 
-    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserProfileServiceImpl.class);
 
     @Override
     public UserProfile createProfile(UserProfile userProfile, int userId) throws UserNotFoundException {

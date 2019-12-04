@@ -23,7 +23,7 @@ public class JwtUtil implements Serializable {
         return doGenerateToken(claims, user.getUsername(), user.getId());
     }
 
-    private String doGenerateToken(Map<String, Object> claims, String subject, int userId) {
+    String doGenerateToken(Map<String, Object> claims, String subject, int userId) {
         return Jwts.builder().setClaims(claims).setSubject(subject)
                 .claim("userId", userId)
                 .setIssuedAt(new Date(System.currentTimeMillis()))

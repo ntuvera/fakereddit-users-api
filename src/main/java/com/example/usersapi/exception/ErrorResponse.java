@@ -23,9 +23,7 @@ public class ErrorResponse {
         this.message = message;
     }
 
-    public ErrorResponse(String message) {
-        this.message = message;
-    }
+    public ErrorResponse() { }
 
     public HttpStatus getHttpStatus() {
         return httpStatus;

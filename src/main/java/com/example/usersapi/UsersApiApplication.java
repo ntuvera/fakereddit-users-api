@@ -26,11 +26,6 @@ import java.io.IOException;
 @EnableSwagger2
 @RestController
 public class UsersApiApplication {
-
-	@GetMapping("/")
-	public String home(){
-		return "GET /users/";
-	}
 	public static void main(String[] args) {
 		SpringApplication.run(UsersApiApplication.class, args);
 	}

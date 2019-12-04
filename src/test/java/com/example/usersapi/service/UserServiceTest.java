@@ -98,6 +98,8 @@ public class UserServiceTest {
 
     @Test(expected = UserAlreadyExistsException.class)
     public void signupUser_User_Failure() throws UserAlreadyExistsException, UserNotFoundException, InvalidArgumentException {
+        when(userRoleService.getRole(anyString())).thenReturn(new UserRole("ROLE_USER"));
+        when(bCryptPasswordEncoder.encode(anyString())).thenReturn("bat");
         when(userService.getUser(tempUser1.getUsername())).thenReturn(tempUser1);
 
         JwtResponse failedSignUpResponse = userService.signUpUser(tempUser1);

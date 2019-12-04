@@ -5,6 +5,8 @@ import com.example.usersapi.model.User;
 import com.example.usersapi.model.UserProfile;
 import com.example.usersapi.repository.UserProfileRepository;
 import com.example.usersapi.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,8 @@ public class UserProfileServiceImpl implements UserProfileService{
     @Autowired
     UserRepository userRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(UserProfileServiceImpl.class);
+
     @Override
     public UserProfile createProfile(UserProfile userProfile, int userId) throws UserNotFoundException {
         Optional<User> foundUser = userRepository.findById(userId);
@@ -30,6 +34,9 @@ public class UserProfileServiceImpl implements UserProfileService{
             } else {
                 throw new UserNotFoundException(HttpStatus.BAD_REQUEST, "User Not Found");
             }
+
+        logger.info(">>>>>>>>>> " + foundUser.get().getUsername() + " just created their profile! New profile: " + newUserProfile);
+
         return userProfileRepository.save(userProfile);
 
     }
@@ -47,6 +54,8 @@ public class UserProfileServiceImpl implements UserProfileService{
             throw new UserNotFoundException(HttpStatus.BAD_REQUEST, "User Not Found");
         }
         newUserProfile = userProfileRepository.save(userProfile);
+
+        logger.info(">>>>>>>>>> " + foundUser.get().getUsername() + " just added to their profile! New profile: " + newUserProfile);
 
         return newUserProfile;
     }

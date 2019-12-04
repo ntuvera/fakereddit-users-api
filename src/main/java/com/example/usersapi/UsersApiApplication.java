@@ -12,10 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableFeignClients
 @RestController
 public class UsersApiApplication {
-	@GetMapping("/")
-	public String home(){
-		return "GET /users/";
-	}
 	public static void main(String[] args) {
 		SpringApplication.run(UsersApiApplication.class, args);
 	}

@@ -31,4 +31,5 @@ build/
 .vscode/
 
 ### Logs ###
-.gitignore
+user.log
+users-api.log
